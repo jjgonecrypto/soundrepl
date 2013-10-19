@@ -33,7 +33,7 @@
       oscillators: [],
       duration: 1 //default
     };
-    if (typeof sound === 'string') //note
+    if (typeof sound === 'string' && sound.length > 0) //note
       player.oscillators.push(createFromNote(sound, type));
     else if (typeof sound === 'number') { //duration
       player.oscillators.push(createFromNote('a4', type));
@@ -43,7 +43,7 @@
         player.oscillators.push(createFromNote(note, type));
       });
     else if (typeof sound === 'object') { //[note] + duration
-      sound.notes = (Array.isArray(sound.notes)) ? sound.notes : [sound.notes];
+      sound.notes = (Array.isArray(sound.notes)) ? sound.notes : (sound.notes) ? [sound.notes] : [];
       sound.notes.forEach(function(note) {
         player.oscillators.push(createFromNote(note, type));
       });
