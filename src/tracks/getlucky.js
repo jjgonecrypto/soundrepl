@@ -6,7 +6,9 @@
     bass2: [1, 0.75, 0.25, 1, 0.5, 0.5],
     main1: [0.5, 0.5, 0.75, 0.75, 0.5, 0.5, 0.5],
     main2: [0.5, 0.5, 0.75, 0.5, 0.75, 0.5, 0.5],
-    vocal1: [1, 0.5, 0.5, 0.5, 0.25, 0.5, 0.25, 1, 0.5, 3]
+    vocal1: [1, 0.5, 0.5, 0.5, 0.25, 0.5, 0.25, 1, 0.5, 3],
+    cv1: [0.5, 0.25, 0.5, 0.5, 0.5, 0.25, 0.5, 1],
+    cv2: [0.5, 0.25, 0.5, 0.5, 0.5, 0.25, 0.5, 0.5, 0.5]
   };
 
   var bassLines = {
@@ -39,7 +41,10 @@
     E: [chords.E, chords.E, chords.E, chords.E, chords.E, chords.E, chords.E],
     'F#': [chords['F#'], chords['F#'], chords['F#'], chords['F#'], chords['F#'], chords.AlowE, chords['F#']],
     'F#7': [chords['F#7'], chords['F#7'], chords['F#7'], chords['F#7'], chords['F#7'], chords['F#7'], chords['F#7']],
-    Edesc: [chords.E, chords.E, chords.E, chords.E, chords.ES, chords.DS, chords['C#S']]
+    Edesc: [chords.E, chords.E, chords.E, chords.E, chords.ES, chords.DS, chords['C#S']],
+    chorusD: ['', 'd5', 'd5', 'd5', 'd5', 'd5', 'd5', 'e5'],
+    'chorusC#': ['', 'c#5', 'c#5', 'c#5', 'c#5', 'c#5', 'c#5', 'e5']
+    
   };
 
   var melodies = {
@@ -66,7 +71,63 @@
         { duration: 1, notes: 'a4'},
         { duration: 0.5, notes: 'f#4'},
         { duration: 3}
+      ],
+    vp3: 
+      [
+        { duration: 1.5 },
+        { duration: 0.5, notes: 'e4' },
+        { duration: 0.5, notes: 'b4' },
+        { duration: 0.25, notes: 'a4' },
+        { duration: 0.5, notes: 'g#4' },
+        { duration: 0.5, notes: 'g#4' },
+        { duration: 0.75, notes: 'g#4' },
+        { duration: 0.5, notes: 'a4' },
+        { duration: 3}
+      ],
+    vp4: 
+      [
+        { duration: 1.5 },
+        { duration: 0.5, notes: 'f#4' },
+        { duration: 0.5, notes: 'b4' },
+        { duration: 0.25, notes: 'a4' },
+        { duration: 0.5, notes: 'g#4' },
+        { duration: 0.5, notes: 'a4' },
+        { duration: 0.75, notes: 'a4' },
+        { duration: 1.5, notes: 'f#4' },
+        { duration: 2}
+      ],
+    pc: 
+      [
+        { duration: 2, notes: 'd5' },
+        { duration: 0.5 },
+        { duration: 0.5, notes: 'c#5' },
+        { duration: 0.5, notes: 'd5' },
+        { duration: 2.5, notes: 'f#5' },
+        { duration: 0.5 },
+        { duration: 0.5, notes: 'f#5' },
+        { duration: 0.5, notes: 'g#5' },
+        { duration: 2.5, notes: 'a5' },
+        { duration: 0.5 },
+        { duration: 0.5, notes: 'a5' },
+        { duration: 0.5, notes: 'b5' },
+        { duration: 3.5, notes: 'g#5' },
+        { duration: 0.5 },
+        { duration: 0.5, notes: 'b4' },
+        { duration: 2, notes: 'd5' },
+        { duration: 0.5}, 
+        { duration: 0.5, notes: 'c#5' },
+        { duration: 0.5, notes: 'd5' },
+        { duration: 2.5, notes: 'f#5' },
+        { duration: 0.5 },
+        { duration: 0.5, notes: 'f#5' },
+        { duration: 0.5, notes: 'g#5' },
+        { duration: 2.5, notes: 'a5' },
+        { duration: 0.5 },
+        { duration: 0.5, notes: 'a5' },
+        { duration: 0.5, notes: 'd6' },
+        { duration: 4.5, notes: 'b5' }
       ]
+    
   };
 
   var getlucky = soundrepl.create();
@@ -76,8 +137,13 @@
   getlucky.add(bassLines.B.concat(bassLines.D, bassLines['F#'], bassLines.E), 'B-D-F#-E bassline').map(rhythms.bass1).sawtooth();
   getlucky.add(progressions.B.concat(progressions.D, progressions['F#'], progressions.Edesc), 'B-D-F#-E riff').map(rhythms.main1);
   getlucky.add(progressions.B7.concat(progressions.D, progressions['F#7'], progressions.E), 'B7-D-F#7-E riff').map(rhythms.main2);
-  getlucky.add(melodies.vp1, 'V1 Phrase 1').transpose("P15");
-  getlucky.add(melodies.vp2, 'V1 Phrase 2');
+  getlucky.add(melodies.vp1, 'V1 Phrase 1').transpose("P8");
+  getlucky.add(melodies.vp2, 'V1 Phrase 2').transpose("P8");
+  getlucky.add(melodies.vp3, 'V1 Phrase 3').transpose("P8");
+  getlucky.add(melodies.vp4, 'V1 Phrase 4').transpose("P8");
+  getlucky.add(melodies.pc, 'Pre Chorus').transpose("P8");
+  getlucky.add(progressions.chorusD.concat(progressions.chorusD, progressions['chorusC#']), 'Chorus Melody').map(rhythms.cv1);
+    //.concat(progressions.chorusB);
 
 
   if (typeof exports !== 'undefined') {

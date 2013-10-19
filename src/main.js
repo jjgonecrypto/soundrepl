@@ -44,11 +44,13 @@
       player.duration = sound;
     } else if (Array.isArray(sound)) //[note] => chord
       sound.forEach(function (note) {
+        if (note.length < 1) return; //allow rests
         player.oscillators.push(createFromNote(note, type));
       });
     else if (typeof sound === 'object') { //[note] + duration
       sound.notes = (Array.isArray(sound.notes)) ? sound.notes : (sound.notes) ? [sound.notes] : [];
       sound.notes.forEach(function(note) {
+        if (note.length < 1) return; //allow rests
         player.oscillators.push(createFromNote(note, type));
       });
       player.duration = (typeof sound.duration === 'number') ? sound.duration : player.duration;
@@ -73,6 +75,10 @@
     }, this);
     return this;
   };
+
+  SoundReplEntry.prototype.concat = function (entry) {
+    this.entry = [].concat(this.entry, entry);
+  }
 
   SoundReplEntry.prototype.transpose = function (interval) {
     function transpose (note) {

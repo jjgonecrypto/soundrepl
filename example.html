@@ -5,28 +5,50 @@
   <script src="/src/3rd/teoria.js"></script>
   <script src="/src/main.js"></script>
   <script src="/src/tracks/getlucky.js"></script>
-
+  <style>
+    article, section { clear: both; }
+    article > label > h2 {
+      float: left;
+    }
+    article > label > input {
+      float: left;
+    }
+  </style>
   <script>
     (function (window) { 
       'use strict';
+      var bpm = 116;
 
       window.onload = function() {
         window.ac = new (window.AudioContext || window.webkitAudioContext);
 
         Object.keys(getlucky.entries).forEach(function(item) {
           var article = document.createElement('article');
-          article.innerHTML = '<h2>' + item + '</h2>';
-          document.querySelector('body').appendChild(article);
-            var button = document.createElement('button');
-            article.appendChild(button);
-            button.innerText = 'Play (' + getlucky.entries[item].length() + ' beats)';
-            button.addEventListener('click', function() {
-              getlucky.entries[item].play(ac, 116);
-            });
+          article.innerHTML = '<label><input type="checkbox" data-name="'+item+'" class="sample" />';
+          article.innerHTML += '<h2>' + item + '</h2></label>';
+          document.querySelector('#samples').appendChild(article);
+          
         });
+      };
+
+      window.play = function() {
+        [].slice.apply(document.querySelectorAll('.sample')).map(function (cb) {
+          if (cb.checked) return cb.getAttribute('data-name');
+          else return '';
+        }).filter(function (f) { 
+          return f.length > 0; 
+        }).forEach(function (sampleName) {
+          getlucky.entries[sampleName].play(ac, bpm);
+        });
+
       };
     })(window);
   </script>
 
-  <body></body>    
+  <body>
+    <section id="samples"></section>
+    <section>
+      <button onclick="play()">Play</button>
+    </section>
+  </body>    
 </html>
