@@ -46,8 +46,13 @@
 
       window.playCustom = function() {
         var code = document.querySelector('#custom').value;
-        var input = new Function('sample', 'return ' + code)(repl.create);
-        if ('play' in input && typeof input.play === 'function') 
+        var input;
+        try {
+          input = new Function('sample', 'return ' + code)(repl.create);
+        } catch (err) {
+          window.alert(err);
+        }
+          if ('play' in input && typeof input.play === 'function') 
           input.play(ac, bpm);
         else //sound primative
           repl.create(input).play(ac, bpm);
