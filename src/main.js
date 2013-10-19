@@ -6,6 +6,10 @@
   var SAWTOOTH = 2;
   var TRIANGLE = 3;
 
+  function arrayWrap(value) {
+    return (Array.isArray(value)) ? value : [value];
+  }
+
   var SoundRepl = function () {
     this.entries = {};
   };
@@ -47,7 +51,7 @@
       sound.notes.forEach(function(note) {
         player.oscillators.push(createFromNote(note, type));
       });
-      player.duration = sound.duration;
+      player.duration = (typeof sound.duration === 'number') ? sound.duration : player.duration;
     }
     return player;
   }
@@ -66,6 +70,26 @@
       else
         return;
       this.entry[i] = descriptor;
+    }, this);
+    return this;
+  };
+
+  SoundReplEntry.prototype.transpose = function (interval) {
+    function transpose (note) {
+      return teoria.note(note).transpose(interval).toString();
+    }
+
+    this.entry = arrayWrap(this.entry);
+    this.entry.forEach(function (value, i) {
+      if (typeof value === 'string')
+         this.entry[i] = {notes: [transpose(value)]};
+      else if (Array.isArray(value))
+         this.entry[i] = {notes: value.map(function (a) { return transpose(a); })};
+      else if (typeof value === 'object' && 'notes' in value) {
+        var notes = arrayWrap(value.notes);
+        value.notes = notes.map(function (a) { return transpose(a); }); 
+      }
+
     }, this);
     return this;
   };
