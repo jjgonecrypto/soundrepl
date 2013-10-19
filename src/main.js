@@ -1,6 +1,11 @@
 (function(teoria) { 
   'use strict';
 
+  var SINE = 0;
+  var SQUARE = 1;
+  var SAWTOOTH = 2;
+  var TRIANGLE = 3;
+
   var SoundRepl = function () {
     this.entries = {};
   };
@@ -12,32 +17,35 @@
 
   var SoundReplEntry = function (entry) {
     this.entry = entry;
+    this.waveType = SINE;
   };
 
-  function createFromNote(note) {
+  function createFromNote(note, type) {
     var o = ac.createOscillator();
+    type = (typeof type === 'number') ? type : SINE;
+    o.type = type;
     o.frequency.value = teoria.note(note).fq();
     return o;
   }
 
-  function createFromSound(sound) {
+  function createFromSound(sound, type) {
     var player = {
       oscillators: [],
       duration: 1 //default
     };
     if (typeof sound === 'string') //note
-      player.oscillators.push(createFromNote(sound));
+      player.oscillators.push(createFromNote(sound, type));
     else if (typeof sound === 'number') { //duration
-      player.oscillators.push(createFromNote('a4'));
+      player.oscillators.push(createFromNote('a4', type));
       player.duration = sound;
     } else if (Array.isArray(sound)) //[note] => chord
       sound.forEach(function (note) {
-        player.oscillators.push(createFromNote(note));
+        player.oscillators.push(createFromNote(note, type));
       });
     else if (typeof sound === 'object') { //[note] + duration
       sound.notes = (Array.isArray(sound.notes)) ? sound.notes : [sound.notes];
       sound.notes.forEach(function(note) {
-        player.oscillators.push(createFromNote(note));
+        player.oscillators.push(createFromNote(note, type));
       });
       player.duration = sound.duration;
     }
@@ -62,6 +70,22 @@
     return this;
   };
 
+  SoundReplEntry.prototype.sine = function () {
+    this.waveType = SINE;
+  };
+
+  SoundReplEntry.prototype.square = function () {
+    this.waveType = SQUARE;
+  };
+
+  SoundReplEntry.prototype.sawtooth = function () {
+    this.waveType = SAWTOOTH;
+  };
+
+  SoundReplEntry.prototype.triangle = function () {
+    this.waveType = TRIANGLE;
+  };
+
   SoundReplEntry.prototype.length = function () {
     var values = (Array.isArray(this.entry)) ? this.entry : [this.entry]; //entry can be progression or single note / duration
     var total = 0;
@@ -79,8 +103,8 @@
     var beatLength = 60 / bpm;
     var values = (Array.isArray(this.entry)) ? this.entry : [this.entry]; //entry can be progression or single note / duration
     var playEntries = values.map(function(sound) {
-      return createFromSound(sound);
-    });
+      return createFromSound(sound, this.waveType);
+    }, this);
     playEntries.forEach(function (p) {
       var duration = p.duration * beatLength;
       p.oscillators.forEach(function (osc) { //handle notes / chords with one oscillator each
@@ -100,8 +124,6 @@
       return instance;
     }
   };
-
-  
 
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) exports = module.exports = soundrepl;

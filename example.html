@@ -17,15 +17,12 @@
           var article = document.createElement('article');
           article.innerHTML = '<h2>' + item + '</h2>';
           document.querySelector('body').appendChild(article);
-
-          Object.keys(getlucky.entries[item]).forEach(function(key) {  
             var button = document.createElement('button');
             article.appendChild(button);
-            button.innerText = 'Play';
+            button.innerText = 'Play (' + getlucky.entries[item].length() + ' beats)';
             button.addEventListener('click', function() {
               getlucky.entries[item].play(ac, 116);
             });
-          });
         });
       };
     })(window);
