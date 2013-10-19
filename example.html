@@ -29,12 +29,13 @@
   <script>
     (function (window) { 
       'use strict';
-      var bpm = 116;
+      var bpm = 120;
       var repl;
       var customs = [];
 
       window.onload = function() {
         window.ac = new (window.AudioContext || window.webkitAudioContext);
+        window.setBPM(120);
         repl = soundrepl.init(window.ac);
         getlucky.setAudioContext(window.ac);
 
@@ -67,13 +68,14 @@
         var code = document.querySelector('#custom').value;
         var input;
         try {
-          input = new Function('sample', 'return ' + code)(repl.create);
+          input = new Function('sample', 'bpm', 'return ' + code)(repl.create, function(b) { setBPM(b); return true; });
         } catch (err) {
           window.alert(err);
         }
-          if (typeof input === 'object' && 'play' in input && typeof input.play === 'function') 
+        
+        if (typeof input === 'object' && 'play' in input && typeof input.play === 'function') 
           customs.push(input.play(bpm));
-        else //sound primative
+        else if (typeof input === 'string') //sound primative
           customs.push(repl.create(input).play(bpm));
       };
 
@@ -83,6 +85,11 @@
         });
         customs = [];
       };
+
+      window.setBPM = function (newBPM) {
+        bpm = newBPM;
+        document.querySelector("#bpm > span").innerHTML = bpm.toString();
+      };
     })(window);
   </script>
 
@@ -90,13 +97,13 @@
     <header>
       <h1>SOUNDREPL Example</h1>
     </header>
-    <section>
+    <section style="display:none">
       <h2>Samples</h2>
       <article id="samples"></article>
       <button onclick="playChecked()">&#9654;</button>
     </section>
     <section>
-      <h2>REPL</h2>
+      <h2 id="bpm">&#9834;BPM = <span></span></h2>
       <textarea id="custom" placeholder="Enter samples. Use 'sample' wrapper for extra functionality" onkeydown="if (event.keyCode !== 13) return; playCustom(); event.preventDefault();"></textarea> 
       <button onclick="stopCustom()">&#8414;</button>
     </section>

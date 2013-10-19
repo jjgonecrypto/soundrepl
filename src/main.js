@@ -47,10 +47,16 @@
   }
 
   function isChord(string) {
+    //prevent X3, X5, X6 an X7 from resolving as chords
+    if (string.slice(-1) === "3" || string.slice(-1) === "5" || string.slice(-1) === "6" || string.slice(-1) === "7") return false;   
     try {
       teoria.chord(string); //try chord
       return true; 
     } catch (err) { return false; }
+  }
+
+  function arrayOfNotes(chord) {
+    return teoria.chord(chord).notes().map(function(n) { return n.toString(); });
   }
 
   function createFromSound(sound, type) {
@@ -59,7 +65,7 @@
       duration: 1 //default
     };
     if (typeof sound === 'string' && sound.length > 0) { //note, chord or rest
-      if (isChord(sound)) return createFromSound(teoria.chord(sound).notes().map(function(n) { return n.toString(); }), type);
+      if (isChord(sound)) return createFromSound(arrayOfNotes(sound), type);
       player.oscillators.push(createFromNote(sound, type));
     } else if (typeof sound === 'number') { //duration
       player.oscillators.push(createFromNote('a4', type));
@@ -86,7 +92,8 @@
       var descriptor;
       var mapIndex = (i >= toType.length) ? i % toType.length : i;
       if (typeof value === 'string' && typeof toType[mapIndex] === 'number') 
-        descriptor = {notes: [value], duration: toType[mapIndex]};
+        if (isChord(value)) descriptor = {notes: arrayOfNotes(value), duration: toType[mapIndex]};
+        else descriptor = {notes: [value], duration: toType[mapIndex]};
       else if (typeof value === 'number' && typeof toType[mapIndex] === 'string')
         descriptor = {notes: toType[mapIndex], duration: value};
       else if (Array.isArray(value) && typeof toType[mapIndex] === 'number')
