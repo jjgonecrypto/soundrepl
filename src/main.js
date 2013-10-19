@@ -177,26 +177,26 @@
 
   SoundReplEntry.prototype.play = function (bpm) {
     var self = this;
-    var start = (typeof offset === 'number') ? offset : 0;
+    var start = 0;
     bpm = (typeof bpm === 'number') ? bpm : 120;
     var beatLength = 60 / bpm;
     var values = (Array.isArray(this.entry)) ? this.entry : [this.entry]; //entry can be progression or single note / duration
     var playEntries = values.map(function(sound) {
       return createFromSound(sound, this.waveType);
     }, this);
-    playEntries.forEach(function (p) {
+    playEntries.forEach(function (p, i) {
       var duration = p.duration * beatLength;
-      p.oscillators.forEach(function (osc, i) { //handle notes / chords with one oscillator each
+      p.oscillators.forEach(function (osc) { //handle notes / chords with one oscillator each
         osc.connect(ac.destination);
         osc.start(start + ac.currentTime);
-        setTimeout(function() {
+        setTimeout(function(i) {
           osc.stop(0); osc.disconnect();
           if (typeof self.repeat !== 'number') return; //ensure repeat is set to continue
-          else if (i != p.oscillators.length - 1) return; //ensure last run only
+          else if (i != playEntries.length - 1) return; //ensure last run only
           else if (self.repeat > 1) self.repeat--;
           else if (self.repeat === 1) delete self.repeat; 
           self.play(bpm);
-        }, (start+duration)*1000);
+        }, (start+duration)*1000, i);
       });
       
       start += duration;

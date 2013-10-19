@@ -131,20 +131,34 @@
   };
 
   var getlucky = soundrepl.init();
+  var output = {};
+
   getlucky.add(rhythms.bass1, 'bass line rhythm 1');
   getlucky.add(bassLines.E, 'bass line in E');
 
-  getlucky.add(bassLines.B.concat(bassLines.D, bassLines['F#'], bassLines.E), 'B-D-F#-E bassline').map(rhythms.bass1).sawtooth();
-  getlucky.add(progressions.B.concat(progressions.D, progressions['F#'], progressions.Edesc), 'B-D-F#-E riff').map(rhythms.main1);
+  output.bassX = getlucky.add(bassLines.B.concat(bassLines.D, bassLines['F#'], bassLines.E), 'B-D-F#-E bassline').map(rhythms.bass1).sawtooth();
+  output.riffX = getlucky.add(progressions.B.concat(progressions.D, progressions['F#'], progressions.Edesc), 'B-D-F#-E riff').map(rhythms.main1);
   getlucky.add(progressions.B7.concat(progressions.D, progressions['F#7'], progressions.E), 'B7-D-F#7-E riff').map(rhythms.main2);
-  getlucky.add(melodies.vp1, 'V1 Phrase 1').transpose("P8");
-  getlucky.add(melodies.vp2, 'V1 Phrase 2').transpose("P8");
-  getlucky.add(melodies.vp3, 'V1 Phrase 3').transpose("P8");
-  getlucky.add(melodies.vp4, 'V1 Phrase 4').transpose("P8");
+  output.v1 = getlucky.add(melodies.vp1, 'V1 Phrase 1').transpose("P8");
+  output.v2 = getlucky.add(melodies.vp2, 'V1 Phrase 2').transpose("P8");
+  output.v3 = getlucky.add(melodies.vp3, 'V1 Phrase 3').transpose("P8");
+  output.v4 = getlucky.add(melodies.vp4, 'V1 Phrase 4').transpose("P8");
   getlucky.add(melodies.pc, 'Pre Chorus').transpose("P8");
   getlucky.add(progressions.chorusD.concat(progressions.chorusD, progressions['chorusC#']), 'Chorus Melody').map(rhythms.cv1);
     //.concat(progressions.chorusB);
 
+
+  getlucky.doplay = function () {
+    var bpm = 120;
+    output.bassX.play(bpm).repeat(2);
+
+    setTimeout(function() { output.riffX.play(bpm).repeat(2);}, 60/bpm*16*1000);
+    setTimeout(function() { output.v1.play(bpm);}, 60/bpm*28*1000);
+    setTimeout(function() { output.v2.play(bpm);}, 60/bpm*36*1000); 
+    setTimeout(function() { output.v3.play(bpm);}, 60/bpm*40*1000); 
+    setTimeout(function() { output.v4.play(bpm);}, 60/bpm*44*1000); 
+      
+  }
 
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) exports = module.exports = getlucky;
