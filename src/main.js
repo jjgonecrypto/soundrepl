@@ -15,8 +15,20 @@
   };
 
   SoundReplEntry.prototype.map = function (toType) {
-   // if (toType)
-
+    this.entry = (Array.isArray(this.entry)) ? this.entry : [this.entry];
+    this.entry.forEach(function (value, i) {
+      var descriptor;
+      var mapIndex = (i >= toType.length) ? i % toType.length : i;
+      if (typeof value === 'string' && typeof toType[mapIndex] === 'number') 
+        descriptor = {notes: [value], duration: toType[mapIndex]};
+      else if (typeof value === 'number' && typeof toType[mapIndex] === 'string')
+        descriptor = {notes: toType[mapIndex], duration: value};
+      else if (Array.isArray(value) && typeof toType[mapIndex] === 'number')
+        descriptor = {notes: value, duration: toType[mapIndex]};
+      else
+        return;
+      this.entry[i] = descriptor;
+    }, this);
     return this;
   };
 

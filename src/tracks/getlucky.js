@@ -11,39 +11,40 @@
   };
 
   var bassLines = {
-    E: ['e2', 'e3', 'e2', 'e2', 'e3'],
-    G: ['g2', 'g3', 'g2', 'g2', 'g3']
+    B: ['b2', 'b3', 'b2', 'b2', 'b3'],
+    D: ['d2', 'd3', 'd2', 'd2', 'd3'],
+    'F#': ['f#2', 'f#3', 'f#2', 'f#2', 'f#3'],
+    E: ['e2', 'e3', 'e2', 'e2', 'e3']
   };
 
   var chords = {
     B: ['b4', 'd4', 'f#4'],
-    F: ['c#4', 'f#4', 'a5']
-  };
+    DlowA: ['a4', 'd4', 'f#4'],
+    D: ['d4', 'f#4', 'a5'],
+    'F#lowC#': ['c#4', 'f#4', 'a5'],
+    'F#': ['f#4', 'a5', 'c#5'],
+    AlowE: ['e4', 'a5', 'c#5'],
+    A: ['a5', 'c#5', 'e5'],
+    E: ['e4', 'g#4', 'b5'],
+    ES: ['e4', 'g#4'],
+    DS: ['d4', 'f#4'],
+    'C#S': ['c#4', 'e4']
+  }
 
   var progressions = {
-    basic: [{notes: ['e2'], duration: 1}, {notes: ['e4'], duration: 0.75}, {notes: ['e2'], duration: 0.25}, {notes: ['e2'], duration: 1}, {notes: ['e3'], duration: 1}]
-  };
-
-  var riffs = {
-     main: [chords.B, chords.F],
-   //   bassE: getlucky.bassLines.E.beat(getlucky.rhythms.bass1)
+    B: [chords.B, chords.B, chords.B, chords.B, chords.B, chords.DlowA, chords.B],
+    D: [chords.D, chords.D, chords.D, chords.D, chords.D, chords['F#lowC#'], chords.D],
+    'F#': [chords['F#'], chords['F#'], chords['F#'], chords['F#'], chords['F#'], chords.AlowE, chords['F#']],
+    Edesc: [chords.E, chords.E, chords.E, chords.E, chords.ES, chords.DS, chords['C#S']]
   };
 
   var getlucky = soundrepl.create();
-  //getlucky.add(baseLines.E, 'baseline:E').map(rhythms.bass1);
   getlucky.add(rhythms.bass1, 'bass line rhythm 1');
   getlucky.add(bassLines.E, 'bass line in E');
-  getlucky.add([chords.B, chords.F], 'B/F progression');
-  getlucky.add(progressions.basic, 'basic bass progression');
-  getlucky.add(['b3','d2'], 'double');
-  getlucky.add(['a5'], 'single');
+
+  getlucky.add(bassLines.B.concat(bassLines.D, bassLines['F#'], bassLines.E), 'B-D-F#-E bassline').map(rhythms.bass1);
+  getlucky.add(progressions.B.concat(progressions.D, progressions['F#'], progressions.Edesc), 'B-D-F#-E riff').map(rhythms.main1);
   
-  // var getlucky = {
-  //   rhythms: rhythms,
-  //   bass: bassLines,
-  //   chords: chords,
-  //   riffs: riffs
-  // };
 
   if (typeof exports !== 'undefined') {
     if (typeof module !== 'undefined' && module.exports) exports = module.exports = getlucky;
