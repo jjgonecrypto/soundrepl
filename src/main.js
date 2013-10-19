@@ -37,8 +37,20 @@
     var o = ac.createOscillator();
     type = (typeof type === 'number') ? type : SINE;
     o.type = type;
-    o.frequency.value = teoria.note(note).fq();
+    try {
+      o.frequency.value = teoria.chord(note).fq(); //try chord 
+    } catch (err) {
+      o.frequency.value = teoria.note(note).fq(); //otherwise note
+    }
+    
     return o;
+  }
+
+  function isChord(string) {
+    try {
+      teoria.chord(string); //try chord
+      return true; 
+    } catch (err) { return false; }
   }
 
   function createFromSound(sound, type) {
@@ -46,9 +58,10 @@
       oscillators: [],
       duration: 1 //default
     };
-    if (typeof sound === 'string' && sound.length > 0) //note
+    if (typeof sound === 'string' && sound.length > 0) { //note, chord or rest
+      if (isChord(sound)) return createFromSound(teoria.chord(sound).notes().map(function(n) { return n.toString(); }), type);
       player.oscillators.push(createFromNote(sound, type));
-    else if (typeof sound === 'number') { //duration
+    } else if (typeof sound === 'number') { //duration
       player.oscillators.push(createFromNote('a4', type));
       player.duration = sound;
     } else if (Array.isArray(sound)) //[note] => chord
@@ -91,19 +104,23 @@
   };
 
   SoundReplEntry.prototype.transpose = function (interval) {
-    function transpose (note) {
-      return teoria.note(note).transpose(interval).toString();
+    function transposeNote (string) {
+      return teoria.note(string).transpose(interval).toString();
+    }
+    function transposeChord (string) {
+      return teoria.chord(string).transpose(interval).notes().map(function (n) { return n.toString(); });
     }
 
     this.entry = arrayWrap(this.entry);
     this.entry.forEach(function (value, i) {
       if (typeof value === 'string')
-         this.entry[i] = {notes: [transpose(value)]};
+        if (isChord(value)) this.entry[i] = {notes: transposeChord(value)};
+        else this.entry[i] = {notes: [transposeNote(value)]};
       else if (Array.isArray(value))
-         this.entry[i] = {notes: value.map(function (a) { return transpose(a); })};
+         this.entry[i] = {notes: value.map(function (a) { return transposeNote(a); })};
       else if (typeof value === 'object' && 'notes' in value) {
         var notes = arrayWrap(value.notes);
-        value.notes = notes.map(function (a) { return transpose(a); }); 
+        value.notes = notes.map(function (a) { return transposeNote(a); }); 
       }
 
     }, this);
