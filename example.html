@@ -39,6 +39,8 @@
         repl = soundrepl.init(window.ac);
         getlucky.setAudioContext(window.ac);
 
+        
+
         Object.keys(getlucky.entries).forEach(function(item) {
           var article = document.createElement('article');
           article.innerHTML = '<label><input type="checkbox" data-name="'+item+'" class="sample" />';
@@ -107,5 +109,6 @@
       <textarea id="custom" placeholder="Enter samples. Use 'sample' wrapper for extra functionality" onkeydown="if (event.keyCode !== 13) return; playCustom(); event.preventDefault();"></textarea> 
       <button onclick="stopCustom()">&#8414;</button>
     </section>
+    <button onclick="getlucky.doplay(116);">&#9654; Get Lucky</button>
   </body>    
 </html>

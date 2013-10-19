@@ -1,4 +1,4 @@
-(function(soundrepl) {
+(function(soundrepl, setTimeout) {
   'use strict';
 
   var rhythms = {
@@ -136,18 +136,17 @@
   getlucky.add(rhythms.bass1, 'bass line rhythm 1');
   getlucky.add(bassLines.E, 'bass line in E');
 
+  getlucky.add(progressions.B7.concat(progressions.D, progressions['F#7'], progressions.E), 'B7-D-F#7-E riff').map(rhythms.main2);
   output.bassX = getlucky.add(bassLines.B.concat(bassLines.D, bassLines['F#'], bassLines.E), 'B-D-F#-E bassline').map(rhythms.bass1).sawtooth();
   output.riffX = getlucky.add(progressions.B.concat(progressions.D, progressions['F#'], progressions.Edesc), 'B-D-F#-E riff').map(rhythms.main1);
-  getlucky.add(progressions.B7.concat(progressions.D, progressions['F#7'], progressions.E), 'B7-D-F#7-E riff').map(rhythms.main2);
   output.v1 = getlucky.add(melodies.vp1, 'V1 Phrase 1').transpose("P8");
   output.v2 = getlucky.add(melodies.vp2, 'V1 Phrase 2').transpose("P8");
   output.v3 = getlucky.add(melodies.vp3, 'V1 Phrase 3').transpose("P8");
   output.v4 = getlucky.add(melodies.vp4, 'V1 Phrase 4').transpose("P8");
   getlucky.add(melodies.pc, 'Pre Chorus').transpose("P8");
   getlucky.add(progressions.chorusD.concat(progressions.chorusD, progressions['chorusC#']), 'Chorus Melody').map(rhythms.cv1);
-    //.concat(progressions.chorusB);
 
-
+  //manual sequencer
   getlucky.doplay = function () {
     var bpm = 120;
     output.bassX.play(bpm).repeat(2);
@@ -168,4 +167,4 @@
   else if (typeof window !== 'undefined') window.getlucky = getlucky;
 
   return getlucky;
-})(window.soundrepl);
+})(window.soundrepl, window.setTimeout);
