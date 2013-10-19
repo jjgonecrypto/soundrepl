@@ -15,7 +15,7 @@
       float: left;
     }
     section > button {
-      font-size: 2em;
+      font-size: 1em;
       padding: 0.3em;
       cursor: pointer;
       border: 1px solid #666;
@@ -23,6 +23,7 @@
       background-color: #555; 
       color: white;
     }
+    section > article > aside, section > article > code { float: none; color: #AAA; display: block; margin-bottom: 1em;}
     section > button:hover { background-color: black; }
     section > textarea { width: 90%; }
   </style>
@@ -32,15 +33,20 @@
       var bpm = 120;
       var repl;
       var customs = [];
+      var examples = [
+        "sample(['am','dm','emaj','fmaj']).map([2,1,1,2]).transpose('m3')", 
+        "sample([{duration: 2, notes: ['a','c','e']}, {duration: 0.75}, {duration: 1, notes: 'g#3'}, {duration: 2.75, notes: ['a','c','f']}])",
+        "sample(['a3','c4','d4','e4','f4']).map([0.5,0.25,0.25,0.5,1]).repeat(0)",
+        "sample(['b0', 'b1', 'b0', 'b0', 'b1']).concat(['d1', 'd2', 'd1', 'd1', 'd2']).concat(['f#1', 'f#2', 'f#1', 'f#1', 'f#2']).concat(['e1', 'e2', 'e1', 'e1', 'e2']).map([1, 0.75, 0.25, 1, 1]).sawtooth()",
+        "bpm(180)"];
 
       window.onload = function() {
         window.ac = new (window.AudioContext || window.webkitAudioContext);
         window.setBPM(120);
         repl = soundrepl.init(window.ac);
-        getlucky.setAudioContext(window.ac);
+        getlucky.setAudioContext(window.ac);        
 
-        
-
+        //for presents in getlucky
         Object.keys(getlucky.entries).forEach(function(item) {
           var article = document.createElement('article');
           article.innerHTML = '<label><input type="checkbox" data-name="'+item+'" class="sample" />';
@@ -52,6 +58,16 @@
           button.addEventListener('click', function() {
             getlucky.entries[item].play(bpm);
           });
+        });
+
+        var ul = document.querySelector('#examples');
+        //for examples
+        examples.forEach(function(codeStr, i) {
+          var li = document.createElement('li');
+          var code = document.createElement('code');
+          code.innerHTML = '<button onclick="loadExample(' + i + ')">load</button>' + codeStr;
+          li.appendChild(code);
+          ul.appendChild(li);
         });
       };
 
@@ -88,6 +104,12 @@
         customs = [];
       };
 
+      window.loadExample = function(codeIndex) {
+        var textarea = document.querySelector('#custom');
+        textarea.value = examples[codeIndex];
+        textarea.focus();
+      };
+
       window.setBPM = function (newBPM) {
         bpm = newBPM;
         document.querySelector("#bpm > span").innerHTML = bpm.toString();
@@ -106,8 +128,12 @@
     </section>
     <section>
       <h2 id="bpm">&#9834;BPM = <span></span></h2>
+      <article>
+        <aside><strong>Examples:</strong></aside>
+        <ul id="examples"></ul>
+      </article>
       <textarea id="custom" placeholder="Enter samples. Use 'sample' wrapper for extra functionality" onkeydown="if (event.keyCode !== 13) return; playCustom(); event.preventDefault();"></textarea> 
-      <button onclick="stopCustom()">&#8414;</button>
+      <button onclick="stopCustom()">&#8414; Stop All Repeats</button>
     </section>
     <button onclick="getlucky.doplay(116);">&#9654; Get Lucky</button>
   </body>    
