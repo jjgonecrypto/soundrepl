@@ -10,72 +10,20 @@
     (function (window) { 
       'use strict';
 
-      window.play = function(ac, beat) {
-          
-        // // C4, E4, G4
-        // var freqs = [261.6, 329.63, 392.00];
-        // var oscs = [];
-        // // initialize the oscillators
-        // for(var i=0;i<freqs.length;i++) {
-        //     var o = ac.createOscillator();
-        //     o.frequency.value = freqs[i];
-        //     o.connect(ac.destination);
-        //     oscs.push(o);
-        // }
-        // // schedule noteOn and noteOff (deprecated: the methods will be renamed to start() and   stop() soon)
-        // for (i = 0; i < oscs.length; i +=1) {
-        //     oscs[i].noteOn(0);
-        //     oscs[i].noteOff(3);
-        // }
-
-
-        var start = 0;
-        beat.forEach(function(unit) {
-          var osc = ac.createOscillator();
-          var duration = 1;
-          if (typeof unit === 'string') {
-            osc.frequency.value = teoria.note(unit).fq();
-          } else if (Array.isArray(unit)) { 
-            osc = [];
-            unit.forEach(function (note) {
-              var o = ac.createOscillator();
-              o.frequency.value = teoria.note(note).fq();
-              osc.push(o);
-            });
-          } else { 
-            osc.frequency.value = Math.max(Math.random()*900, 300);
-            duration = unit;
-          } 
-
-          if (!Array.isArray(osc)) osc = [osc];
-
-          osc.forEach(function (o) {
-            o.connect(ac.destination);
-            o.start(start);
-            //o.stop(start+duration); //this does not work =/
-            setTimeout(function(o) {o.stop(0);}, (start+duration)*1000,o);  
-          });
-          
-          start += duration;
-
-        });
-
-      };
-
       window.onload = function() {
         window.ac = new (window.AudioContext || window.webkitAudioContext);
 
-        Object.keys(getlucky).forEach(function(item) {
+        Object.keys(getlucky.entries).forEach(function(item) {
           var article = document.createElement('article');
           article.innerHTML = '<h2>' + item + '</h2>';
           document.querySelector('body').appendChild(article);
 
-          Object.keys(getlucky[item]).forEach(function(key) {  
+          Object.keys(getlucky.entries[item]).forEach(function(key) {  
             var button = document.createElement('button');
             article.appendChild(button);
-            button.innerText = key;
+            button.innerText = 'Play';
             button.addEventListener('click', function() {
-              window.play(window.ac, getlucky[item][key]);
+              getlucky.entries[item].play(ac);
             });
           });
         });
