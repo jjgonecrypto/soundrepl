@@ -10,7 +10,7 @@
     (function (window) { 
       'use strict';
 
-      window.play = function(beat) {
+      window.play = function(ac, beat) {
           
         // // C4, E4, G4
         // var freqs = [261.6, 329.63, 392.00];
@@ -28,33 +28,32 @@
         //     oscs[i].noteOff(3);
         // }
 
-        window.ac = new (window.AudioContext || window.webkitAudioContext);
 
         var start = 0;
         beat.forEach(function(unit) {
           var osc = ac.createOscillator();
           var duration = 1;
-          osc.connect(ac.destination);
           if (typeof unit === 'string') {
             osc.frequency.value = teoria.note(unit).fq();
           } else if (Array.isArray(unit)) { 
             osc = [];
             unit.forEach(function (note) {
               var o = ac.createOscillator();
-              o.connect(ac.destination);
               o.frequency.value = teoria.note(note).fq();
               osc.push(o);
             });
           } else { 
-            osc.frequency.value = Math.max(Math.random()*1500, 100);
+            osc.frequency.value = Math.max(Math.random()*900, 300);
             duration = unit;
           } 
 
           if (!Array.isArray(osc)) osc = [osc];
 
           osc.forEach(function (o) {
-            o.noteOn(start);
-            o.noteOff(start+duration);  
+            o.connect(ac.destination);
+            o.start(start);
+            //o.stop(start+duration); //this does not work =/
+            setTimeout(function(o) {o.stop(0);}, (start+duration)*1000,o);  
           });
           
           start += duration;
@@ -64,6 +63,8 @@
       };
 
       window.onload = function() {
+        window.ac = new (window.AudioContext || window.webkitAudioContext);
+
         Object.keys(getlucky).forEach(function(item) {
           var article = document.createElement('article');
           article.innerHTML = '<h2>' + item + '</h2>';
@@ -74,7 +75,7 @@
             article.appendChild(button);
             button.innerText = key;
             button.addEventListener('click', function() {
-              play(getlucky[item][key]);
+              window.play(window.ac, getlucky[item][key]);
             });
           });
         });
