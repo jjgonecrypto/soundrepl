@@ -19,6 +19,10 @@
     return this.entries[name];
   };
 
+  SoundRepl.prototype.create = function (content) {
+    return new SoundReplEntry(content);
+  };
+
   var SoundReplEntry = function (entry) {
     this.entry = entry;
     this.waveType = SINE;
@@ -102,18 +106,22 @@
 
   SoundReplEntry.prototype.sine = function () {
     this.waveType = SINE;
+    return this;
   };
 
   SoundReplEntry.prototype.square = function () {
     this.waveType = SQUARE;
+    return this;
   };
 
   SoundReplEntry.prototype.sawtooth = function () {
     this.waveType = SAWTOOTH;
+    return this;
   };
 
   SoundReplEntry.prototype.triangle = function () {
     this.waveType = TRIANGLE;
+    return this;
   };
 
   SoundReplEntry.prototype.length = function () {
