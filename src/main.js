@@ -14,6 +14,36 @@
     this.entry = entry;
   };
 
+  function createFromNote(note) {
+    var o = ac.createOscillator();
+    o.frequency.value = teoria.note(note).fq();
+    return o;
+  }
+
+  function createFromSound(sound) {
+    var player = {
+      oscillators: [],
+      duration: 1 //default
+    };
+    if (typeof sound === 'string') //note
+      player.oscillators.push(createFromNote(sound));
+    else if (typeof sound === 'number') { //duration
+      player.oscillators.push(createFromNote('a4'));
+      player.duration = sound;
+    } else if (Array.isArray(sound)) //[note] => chord
+      sound.forEach(function (note) {
+        player.oscillators.push(createFromNote(note));
+      });
+    else if (typeof sound === 'object') { //[note] + duration
+      sound.notes = (Array.isArray(sound.notes)) ? sound.notes : [sound.notes];
+      sound.notes.forEach(function(note) {
+        player.oscillators.push(createFromNote(note));
+      });
+      player.duration = sound.duration;
+    }
+    return player;
+  }
+
   SoundReplEntry.prototype.map = function (toType) {
     this.entry = (Array.isArray(this.entry)) ? this.entry : [this.entry];
     this.entry.forEach(function (value, i) {
@@ -32,52 +62,34 @@
     return this;
   };
 
-  SoundReplEntry.prototype.play = function (ac) {
-    
-    function createFromNote(note) {
-      var o = ac.createOscillator();
-      o.frequency.value = teoria.note(note).fq();
-      return o;
-    }
-
-    function createFromSound(sound) {
-      var player = {
-        oscillators: [],
-        duration: 1 //default
-      };
-      if (typeof sound === 'string') //note
-        player.oscillators.push(createFromNote(sound));
-      else if (typeof sound === 'number') //duration
-        player.oscillators.push(createFromNote('a4'));
-      else if (Array.isArray(sound)) //[note] => chord
-        sound.forEach(function (note) {
-          player.oscillators.push(createFromNote(note));
-        });
-      else if (typeof sound === 'object') { //[note] + duration
-        sound.notes = (Array.isArray(sound.notes)) ? sound.notes : [sound.notes];
-        sound.notes.forEach(function(note) {
-          player.oscillators.push(createFromNote(note));
-        });
-        player.duration = sound.duration;
-      }
-      return player;
-    }
-    var start = 0;
-
+  SoundReplEntry.prototype.length = function () {
     var values = (Array.isArray(this.entry)) ? this.entry : [this.entry]; //entry can be progression or single note / duration
-    
+    var total = 0;
+    values.map(function(sound) {
+      return createFromSound(sound);
+    }).forEach(function (p) {
+      total += p.duration;
+    });
+    return total;
+  };
+
+  SoundReplEntry.prototype.play = function (ac, bpm) {
+    var start = 0;
+    bpm = (typeof bpm === 'number') ? bpm : 120;
+    var beatLength = 60 / bpm;
+    var values = (Array.isArray(this.entry)) ? this.entry : [this.entry]; //entry can be progression or single note / duration
     var playEntries = values.map(function(sound) {
       return createFromSound(sound);
     });
-    
     playEntries.forEach(function (p) {
+      var duration = p.duration * beatLength;
       p.oscillators.forEach(function (osc) { //handle notes / chords with one oscillator each
         osc.connect(ac.destination);
         osc.start(start + ac.currentTime);
-        setTimeout(function() {osc.stop(0); osc.disconnect();}, (start+p.duration)*1000);
+        setTimeout(function() {osc.stop(0); osc.disconnect();}, (start+duration)*1000);
       });
       
-      start += p.duration;
+      start += duration;
     });
 
   };
