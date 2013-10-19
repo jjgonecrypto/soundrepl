@@ -1,0 +1,21 @@
+{
+  "name": "soundrepl",
+  "version": "0.0.1",
+  "description": "functional descriptors for sound elements",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/justinjmoses/soundrepl.git"
+  },
+  "author": "justin j. moses",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "teoria": "=0.3.6"
+    },
+  "bugs": {
+    "url": "https://github.com/justinjmoses/soundrepl/issues"
+  }
+}

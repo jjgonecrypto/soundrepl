@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<title>soundrepl example</title>
+
+  <script src="/src/3rd/teoria.js"></script>
+  <script src="/src/main.js"></script>
+  <script src="/src/tracks/getlucky.js"></script>
+
+  <script>
+    (function (window) { 
+      'use strict';
+
+      window.play = function(beat) {
+          
+        // // C4, E4, G4
+        // var freqs = [261.6, 329.63, 392.00];
+        // var oscs = [];
+        // // initialize the oscillators
+        // for(var i=0;i<freqs.length;i++) {
+        //     var o = ac.createOscillator();
+        //     o.frequency.value = freqs[i];
+        //     o.connect(ac.destination);
+        //     oscs.push(o);
+        // }
+        // // schedule noteOn and noteOff (deprecated: the methods will be renamed to start() and   stop() soon)
+        // for (i = 0; i < oscs.length; i +=1) {
+        //     oscs[i].noteOn(0);
+        //     oscs[i].noteOff(3);
+        // }
+
+        window.ac = new (window.AudioContext || window.webkitAudioContext);
+
+        var start = 0;
+        beat.forEach(function(unit) {
+          var osc = ac.createOscillator();
+          var duration = 1;
+          osc.connect(ac.destination);
+          if (typeof unit === 'string') {
+            osc.frequency.value = teoria.note(unit).fq();
+          } else if (Array.isArray(unit)) { 
+            osc = [];
+            unit.forEach(function (note) {
+              var o = ac.createOscillator();
+              o.connect(ac.destination);
+              o.frequency.value = teoria.note(note).fq();
+              osc.push(o);
+            });
+          } else { 
+            osc.frequency.value = Math.max(Math.random()*1500, 100);
+            duration = unit;
+          } 
+
+          if (!Array.isArray(osc)) osc = [osc];
+
+          osc.forEach(function (o) {
+            o.noteOn(start);
+            o.noteOff(start+duration);  
+          });
+          
+          start += duration;
+
+        });
+
+      };
+
+      window.onload = function() {
+        Object.keys(getlucky).forEach(function(item) {
+          var article = document.createElement('article');
+          article.innerHTML = '<h2>' + item + '</h2>';
+          document.querySelector('body').appendChild(article);
+
+          Object.keys(getlucky[item]).forEach(function(key) {  
+            var button = document.createElement('button');
+            article.appendChild(button);
+            button.innerText = key;
+            button.addEventListener('click', function() {
+              play(getlucky[item][key]);
+            });
+          });
+        });
+      };
+    })(window);
+  </script>
+
+  <body></body>    
+</html>
