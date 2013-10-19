@@ -8,12 +8,23 @@
   <style>
     html, body { font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; font-weight: 200; }
     article, section { clear: both; }
-    article > label > h3 {
+    section { background-color: #EEE; border: 1px solid #DDD; padding: 0; margin-bottom: 1em; }
+    section > h2 { margin: 0; background-color: #fac; padding: 1em;}
+    section > article { padding: 1em; }
+    article > label, article > aside, article > label > h3, article > label > input {
       float: left;
     }
-    article > label > input {
-      float: left;
+    section > button {
+      font-size: 2em;
+      padding: 0.3em;
+      cursor: pointer;
+      border: 1px solid #666;
+      border-radius: 5px;
+      background-color: #555; 
+      color: white;
     }
+    section > button:hover { background-color: black; }
+    section > textarea { width: 90%; }
   </style>
   <script>
     (function (window) { 
@@ -27,13 +38,18 @@
         Object.keys(getlucky.entries).forEach(function(item) {
           var article = document.createElement('article');
           article.innerHTML = '<label><input type="checkbox" data-name="'+item+'" class="sample" />';
-          article.innerHTML += '<h3>' + item + '</h3></label>';
+          article.innerHTML += '<h3>' + item + '</h3></label><aside>' + getlucky.entries[item].length() + ' beats</aside>';
           document.querySelector('#samples').appendChild(article);
-          
+          var button = document.createElement('button');
+          article.appendChild(button);
+          button.innerText = 'Play';
+          button.addEventListener('click', function() {
+            getlucky.entries[item].play(ac, bpm);
+          });
         });
       };
 
-      window.playSelected = function() {
+      window.playChecked = function() {
         [].slice.apply(document.querySelectorAll('.sample')).map(function (cb) {
           if (cb.checked) return cb.getAttribute('data-name');
           else return '';
@@ -52,7 +68,7 @@
         } catch (err) {
           window.alert(err);
         }
-          if ('play' in input && typeof input.play === 'function') 
+          if (typeof input === 'object' && 'play' in input && typeof input.play === 'function') 
           input.play(ac, bpm);
         else //sound primative
           repl.create(input).play(ac, bpm);
@@ -64,13 +80,15 @@
     <header>
       <h1>SOUNDREPL Example</h1>
     </header>
-    <section id="samples"></section>
     <section>
-      <button onclick="playSelected()">Play</button>
+      <h2>Samples</h2>
+      <article id="samples"></article>
+      <button onclick="playChecked()">&#9654;</button>
     </section>
     <section>
-      <textarea id="custom" keydown="if (evt.keyCode === 13) playCustom()"></textarea> 
-      <button onclick="playCustom()">Play Custom</button>
+      <h2>REPL</h2>
+      <textarea id="custom" placeholder="Enter samples. Use 'sample' wrapper for extra functionality" onkeydown="if (event.keyCode !== 13) return; playCustom(); event.preventDefault();"></textarea> 
+      <button onclick="playCustom()">&#9654;</button>
     </section>
   </body>    
 </html>
