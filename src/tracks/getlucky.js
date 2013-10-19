@@ -130,7 +130,7 @@
     
   };
 
-  var getlucky = soundrepl.create();
+  var getlucky = soundrepl.init();
   getlucky.add(rhythms.bass1, 'bass line rhythm 1');
   getlucky.add(bassLines.E, 'bass line in E');
 

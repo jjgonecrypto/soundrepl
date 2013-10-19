@@ -1,10 +1,11 @@
-(function(teoria) { 
+(function(teoria, setTimeout) { 
   'use strict';
 
   var SINE = 0;
   var SQUARE = 1;
   var SAWTOOTH = 2;
   var TRIANGLE = 3;
+  var ac; //a static reference to the audio context
 
   function arrayWrap(value) {
     return (Array.isArray(value)) ? value : [value];
@@ -21,6 +22,10 @@
 
   SoundRepl.prototype.create = function (content) {
     return new SoundReplEntry(content);
+  };
+
+  SoundRepl.prototype.setAudioContext = function (audioContext) {
+    ac = audioContext; //not beautiful.
   };
 
   var SoundReplEntry = function (entry) {
@@ -82,7 +87,8 @@
 
   SoundReplEntry.prototype.concat = function (entry) {
     this.entry = [].concat(this.entry, entry);
-  }
+    return this;
+  };
 
   SoundReplEntry.prototype.transpose = function (interval) {
     function transpose (note) {
@@ -135,7 +141,7 @@
     return total;
   };
 
-  SoundReplEntry.prototype.play = function (ac, bpm) {
+  SoundReplEntry.prototype.play = function (bpm) {
     var start = 0;
     bpm = (typeof bpm === 'number') ? bpm : 120;
     var beatLength = 60 / bpm;
@@ -157,8 +163,9 @@
   };
 
   var soundrepl = {
-    create: function () {
-      var instance = new SoundRepl;
+    init: function (audioContext) {
+      var instance = new SoundRepl();
+      ac = audioContext;
       return instance;
     }
   };
@@ -171,4 +178,4 @@
   else if (typeof window !== 'undefined') window.soundrepl = soundrepl;
 
   return soundrepl;
-})(window.teoria);
+})(window.teoria, window.setTimeout);
