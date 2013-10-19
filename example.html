@@ -31,6 +31,7 @@
       'use strict';
       var bpm = 116;
       var repl;
+      var customs = [];
 
       window.onload = function() {
         window.ac = new (window.AudioContext || window.webkitAudioContext);
@@ -71,9 +72,16 @@
           window.alert(err);
         }
           if (typeof input === 'object' && 'play' in input && typeof input.play === 'function') 
-          input.play(bpm);
+          customs.push(input.play(bpm));
         else //sound primative
-          repl.create(input).play(bpm);
+          customs.push(repl.create(input).play(bpm));
+      };
+
+      window.stopCustom = function() { 
+        customs.forEach(function (item) {
+          item.stop();
+        });
+        customs = [];
       };
     })(window);
   </script>
@@ -90,7 +98,7 @@
     <section>
       <h2>REPL</h2>
       <textarea id="custom" placeholder="Enter samples. Use 'sample' wrapper for extra functionality" onkeydown="if (event.keyCode !== 13) return; playCustom(); event.preventDefault();"></textarea> 
-      <button onclick="playCustom()">&#9654;</button>
+      <button onclick="stopCustom()">&#8414;</button>
     </section>
   </body>    
 </html>

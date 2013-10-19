@@ -158,8 +158,19 @@
     return total;
   };
 
+  SoundReplEntry.prototype.repeat = function (count) {
+    this.repeat = count;
+    return this;
+  };
+
+  SoundReplEntry.prototype.stop = function () { 
+    delete this.repeat;
+    return this;
+  };
+
   SoundReplEntry.prototype.play = function (bpm) {
-    var start = 0;
+    var self = this;
+    var start = (typeof offset === 'number') ? offset : 0;
     bpm = (typeof bpm === 'number') ? bpm : 120;
     var beatLength = 60 / bpm;
     var values = (Array.isArray(this.entry)) ? this.entry : [this.entry]; //entry can be progression or single note / duration
@@ -168,15 +179,23 @@
     }, this);
     playEntries.forEach(function (p) {
       var duration = p.duration * beatLength;
-      p.oscillators.forEach(function (osc) { //handle notes / chords with one oscillator each
+      p.oscillators.forEach(function (osc, i) { //handle notes / chords with one oscillator each
         osc.connect(ac.destination);
         osc.start(start + ac.currentTime);
-        setTimeout(function() {osc.stop(0); osc.disconnect();}, (start+duration)*1000);
+        setTimeout(function() {
+          osc.stop(0); osc.disconnect();
+          if (typeof self.repeat !== 'number') return; //ensure repeat is set to continue
+          else if (i != p.oscillators.length - 1) return; //ensure last run only
+          else if (self.repeat > 1) self.repeat--;
+          else if (self.repeat === 1) delete self.repeat; 
+          self.play(bpm);
+        }, (start+duration)*1000);
       });
       
       start += duration;
     });
 
+    return this;
   };
 
   var soundrepl = {
