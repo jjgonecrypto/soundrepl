@@ -18,7 +18,7 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "teoria": "=0.3.6",
-    "connect": "=2.9.x"
+    "connect": "=2.14.0"
     },
   "bugs": {
     "url": "https://github.com/justinjmoses/soundrepl/issues"
